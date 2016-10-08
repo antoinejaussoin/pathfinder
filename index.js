@@ -1,5 +1,6 @@
 const minBy = require('lodash/minBy');
 const find = require('lodash/find');
+const pathFinder = require('./display');
 
 const cities = [];
 cities.push({ name: "Calais", long: 3, lat: 3, neighbours: ["Boulogne","Dunkerque"] });
@@ -32,86 +33,11 @@ cities.forEach(city => {
 
 console.log('We have ' + cities.length + ' cities');
 
-const calculateDistance = (city1, city2) => {
-    return Math.sqrt(Math.pow(city2.lat - city1.lat, 2) + Math.pow(city2.long - city1.long, 2));
-}
-
-console.log('Calais Dunkerque: ', calculateDistance(cities[0], cities[1]));
-console.log('Marseille Dunkerque: ', calculateDistance(cities[16], cities[1]));
-
-const calculatePath = (start, goal) => {
-    const closedSet = [];
-    const openSet = [start];
-    const cameFrom = {};
-
-    const gScore = {};
-    gScore[start] = 0;
-
-    const fScore = {};
-    fScore[start] = calculateDistance(start, goal);
-
-    while (openSet.length) {
-        let current = minFScore(openSet, goal);
-
-        if (current === goal) {
-            return reconstructPath(cameFrom, current);
-        }
-
-        remove(openSet, current);
-        closedSet.push(current);
-
-        current.neighbours.forEach(neighbour => {
-            if (isIn(closedSet, neighbour)) {
-                return;
-            }
-
-            const tentativeGScore = gScore[current] + calculateDistance(current, neighbour);
-
-            if (!isIn(openSet, neighbour)) {
-                openSet.push(neighbour);
-            } else {
-                return;
-            }
-
-            cameFrom[neighbour.name] = current.name;
-            gScore[neighbour] = tentativeGScore;
-            fScore[neighbour] = gScore[neighbour] + calculateDistance(neighbour, goal);
-
-        });
-    }
-}
-
-const reconstructPath = (cameFrom, current) => {
-    const totalPath = [current.name];
-    let cur = current.name;
-    while (cameFrom[cur]) {
-        cur = cameFrom[cur];
-        totalPath.splice(0, 0, cur);
-    }
-    
-    return totalPath;
-}
-
-const minFScore = (cities, goal) => minBy(cities, c => calculateDistance(c, goal));
-const remove = (array, item) => {
-    const index = array.indexOf(item);
-    array.splice(index, 1);
-}
-const isIn = (array, item) => array.indexOf(item) !== -1;
-
-const findRoute = (cityName1, cityName2) => {
-    const city1 = find(cities, { name: cityName1});
-    const city2 = find(cities, { name: cityName2});
-    const path = calculatePath(city1, city2);
-
-    console.log('------------------------------------------')
-    console.log('To go from ' + cityName1 + ' to ' + cityName2+' :');
-    console.log(path.join(' --> '));
-    console.log('------------------------------------------')
-}
 
 // findRoute('Marseille', 'Brest');
 // findRoute('Marseille', 'Calais');
 // findRoute('Langon', 'Compiègne');
-findRoute('Calais', 'Nice');
+pathFinder(cities, 'Calais', 'Nice');
+pathFinder(cities, 'Calais', 'Boulogne');
+pathFinder(cities, 'Paris', 'Montpellier');
 // findRoute('Strasbourg', 'Langon');

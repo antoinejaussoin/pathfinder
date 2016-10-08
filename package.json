@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/antoinejaussoin/pathfinder#readme",
   "dependencies": {
-    "lodash": "^4.16.4"
+    "lodash": "^4.16.4",
+    "numeral": "^1.5.3"
   }
 }
